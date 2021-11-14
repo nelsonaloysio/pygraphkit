@@ -18,7 +18,8 @@ READERS = {
     'pajek': nx.read_pajek,
     'pickle': nx.read_gpickle,
     'shp': nx.read_shp,
-    'yaml': nx.read_yaml}
+    # 'yaml': nx.read_yaml,
+}
 
 WRITERS = {
     'gexf': nx.write_gexf,
@@ -26,7 +27,8 @@ WRITERS = {
     'graphml': nx.write_graphml,
     'pajek': nx.write_pajek,
     'shp': nx.write_shp,
-    'yaml': nx.write_yaml}
+    # 'yaml': nx.write_yaml,
+}
 
 
 class Graph():

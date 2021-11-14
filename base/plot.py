@@ -130,7 +130,7 @@ class Plot():
                     y=y_nodes,
                     mode='markers',
                     hoverinfo='text',
-                    name=group.format(len(nodes)),
+                    name=str(group).format(len(nodes)),
                     text=text_,
                     marker=dict(
                         color=color_ or size_ or NODE_COLOR,
