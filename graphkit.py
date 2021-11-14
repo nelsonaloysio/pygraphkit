@@ -67,7 +67,7 @@ class GraphKit(Graph, Centrality, Layout, Partition, Plot, Subgraph):
 
         if G.order() > (max_nodes or G.order()):
             sort_by = (
-                self._compute(G, attrs=sort_by)
+                self.compute(G, attrs=sort_by)
                     .sort_values(by=sort_by, ascending=False)
                     .index
                 if isinstance(sort_by, str)
@@ -140,7 +140,7 @@ class GraphKit(Graph, Centrality, Layout, Partition, Plot, Subgraph):
 
         if order > (max_nodes or G.order()):
             sort_by = (
-                self._compute(G, attrs=sort_by)
+                self.compute(G, attrs=sort_by)
                     .sort_values(by=sort_by, ascending=False)
                     .index
                 if isinstance(sort_by, str)

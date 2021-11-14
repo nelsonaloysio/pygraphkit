@@ -36,7 +36,7 @@ class Graph():
         ''' Abstract method for "DIY" implementations. '''
 
     def graph(self, data: Union[str, nx.Graph, nx.DiGraph, nk.Graph, ig.Graph, pd.DataFrame],
-              source_attr=None, target_attr=None, edge_attr=None, directed=True):
+              source_attr=None, target_attr=None, edge_attrs=None, directed=True, weights=False):
         ''' Loads NetworkX graph from file or Pandas data frame. '''
         return data\
             if self.is_graph(
@@ -56,13 +56,17 @@ class Graph():
                 ),
                 source_attr=source_attr,
                 target_attr=target_attr,
-                edge_attr=edge_attr,
-                create_using=nx.DiGraph if directed else nx.Graph)
+                edge_attrs=edge_attrs,
+                create_using=nx.DiGraph if directed else nx.Graph,
+                weights=weights)
 
     @staticmethod
     def nodes(G):
         ''' Returns Pandas node list from graph. '''
-        return pd.DataFrame(dict(G.nodes(data=True)).values(), index=G.nodes())
+        return pd.DataFrame(
+            dict(G.nodes(data=True)).values(),
+            index=G.nodes(),
+        )
 
     @staticmethod
     def edges(G):
@@ -173,8 +177,8 @@ class Graph():
                            f"Accepted formats: {list(WRITERS.keys())}.")
 
     @staticmethod
-    def pd2nx(df: pd.DataFrame, source_attr=None, target_attr=None, edge_attr=[],
-              create_using=nx.DiGraph, remove_self_loops=False, weighted=True):
+    def pd2nx(df: pd.DataFrame, source_attr=None, target_attr=None, edge_attrs=[],
+              create_using=nx.DiGraph, remove_self_loops=False, weights=False):
         ''' Returns a NetworkX graph object from Pandas data frame. '''
         if not (source_attr and target_attr):
             if df.shape[1] == 2:
@@ -193,17 +197,17 @@ class Graph():
         if remove_self_loops:
             E = E[E[source_attr] != E[target_attr]]
         # Consider edge weights
-        if weighted:
-            weights = E.value_counts()
-            edge_attr = ['weight'] + (edge_attr if edge_attr else [])
-            E['weight'] = [weights.loc[x, y] for x, y in zip(E['source'], E['target'])]
+        if weights:
+            edge_attrs = ['weight'] + (edge_attrs if edge_attrs else [])
+            edge_weights = E.value_counts()
+            E['weight'] = [edge_weights.loc[x, y] for x, y in zip(E['source'], E['target'])]
         # Return graph with edge attributes
         return nx.convert_matrix\
                  .from_pandas_edgelist(
                      E,
                      source=source_attr,
                      target=target_attr,
-                     edge_attr=edge_attr if edge_attr else None,
+                     edge_attr=edge_attrs if edge_attrs else None,
                      create_using=create_using)
 
     @staticmethod
