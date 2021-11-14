@@ -1,4 +1,4 @@
-# NetworkPlot
+# GraphKit
 
 Python script to analyze networks by computing centrality measures, determining communities and plotting graphs.
 
@@ -16,4 +16,4 @@ Python script to analyze networks by computing centrality measures, determining 
 
 ### Usage
 
-A **[Jupyter notebook](NetworkPlot.ipynb)** is included with detailed instructions on execution.
+A **[Jupyter notebook](notebook/notebook.ipynb)** is included with detailed instructions on execution.
