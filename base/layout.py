@@ -35,10 +35,10 @@ class Layout():
     @staticmethod
     def forceatlas2_layout(
         G: nx.Graph,
-        pos: Union[list, dict, pd.DataFrame] = None,
-        iterations: int = 30,
-        linlog: bool = True,
-        nohubs: bool = True,
+        pos: Union[str, list, dict, pd.DataFrame] = None,
+        iterations: int = 10,
+        linlog: bool = False,
+        nohubs: bool = False,
         seed: int = None,
     ) -> pd.DataFrame:
         '''
@@ -46,7 +46,10 @@ class Layout():
         https://doi.org/10.1371/journal.pone.0098679
         '''
         if pos is None:
-            pos = Layout.circular_layout(G)
+            pos = Layout.random_layout(G)
+
+        elif type(pos) is str:
+            pos = getattr(f'{Layout}_layout', pos)(G)
 
         elif type(pos) is dict:
             pos = pd.DataFrame.from_dict(
@@ -83,7 +86,7 @@ class Layout():
     def kamada_kawai_layout(
         G: Union[nx.Graph, ig.Graph],
         dim: int = 2,
-        labels: list = None,
+        index: list = None,
     ) -> pd.DataFrame:
         '''
         Implementation of Kamada-Kawai:
@@ -93,12 +96,12 @@ class Layout():
             iG = ig.Graph(directed=G.is_directed())
             iG.add_vertices(list(G.nodes()))
             iG.add_edges(list(G.edges()))
-            if labels is None:
-                labels = G.nodes()
+            if index is None:
+                index = G.nodes()
         return pd.DataFrame(
             list(iG.layout('kk', dim=dim)),
             columns=['x', 'y', 'z'][:dim],
-            index=labels,
+            index=index,
         )
 
     @staticmethod

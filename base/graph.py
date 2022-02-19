@@ -37,8 +37,17 @@ class Graph():
     def __init__(self):
         ''' Abstract method for "DIY" implementations. '''
 
-    def graph(self, data: Union[str, nx.Graph, nx.DiGraph, nk.Graph, ig.Graph, pd.DataFrame],
-              source_attr=None, target_attr=None, edge_attrs=None, directed=True, weights=False):
+    def graph(
+        self,
+        data: Union[str, nx.Graph, nx.DiGraph, nk.Graph, ig.Graph, pd.DataFrame],
+        delimiter: str = None,
+        directed: bool = True,
+        edge_attrs : list = None,
+        engine: str = None,
+        source_attr: str = None,
+        target_attr: str = None,
+        weights: bool= False,
+    ):
         ''' Loads NetworkX graph from file or Pandas data frame. '''
         return data\
             if self.is_graph(
@@ -55,11 +64,13 @@ class Graph():
             else self.pd2nx(
                 self.pd_read_file(
                     data,
+                    delimiter=delimiter,
+                    engine=engine,
                 ),
+                create_using=nx.DiGraph if directed else nx.Graph,
+                edge_attrs=edge_attrs,
                 source_attr=source_attr,
                 target_attr=target_attr,
-                edge_attrs=edge_attrs,
-                create_using=nx.DiGraph if directed else nx.Graph,
                 weights=weights)
 
     @staticmethod
@@ -179,7 +190,7 @@ class Graph():
                            f"Accepted formats: {list(WRITERS.keys())}.")
 
     @staticmethod
-    def pd2nx(df: pd.DataFrame, source_attr=None, target_attr=None, edge_attrs=[],
+    def pd2nx(df: pd.DataFrame, source_attr="source", target_attr="target", edge_attrs=[],
               create_using=nx.DiGraph, remove_self_loops=False, weights=False):
         ''' Returns a NetworkX graph object from Pandas data frame. '''
         if not (source_attr and target_attr):
@@ -202,7 +213,8 @@ class Graph():
         if weights:
             edge_attrs = ['weight'] + (edge_attrs if edge_attrs else [])
             edge_weights = E.value_counts()
-            E['weight'] = [edge_weights.loc[x, y] for x, y in zip(E['source'], E['target'])]
+            with pd.option_context('mode.chained_assignment', None):
+                E['weight'] = [edge_weights.loc[x, y] for x, y in zip(E[source_attr], E[target_attr])]
         # Return graph with edge attributes
         return nx.convert_matrix\
                  .from_pandas_edgelist(
@@ -213,7 +225,7 @@ class Graph():
                      create_using=create_using)
 
     @staticmethod
-    def pd_read_file(path_or_df: Union[str, pd.DataFrame], low_memory=False, sep=None, usecols=[]):
+    def pd_read_file(path_or_df: Union[str, pd.DataFrame], delimiter=None, engine=None, low_memory=False, sep=None, usecols=[]):
         ''' Returns a Pandas data frame object from file. '''
         def get_file_delimiter(path):
             ''' Returns character delimiter from file. '''
@@ -231,6 +243,8 @@ class Graph():
             if path_or_df.endswith('.json')\
             else pd.read_table(
                 path_or_df,
-                usecols=usecols if usecols else None,
+                delimiter=delimiter,
+                engine=engine,
+                low_memory=low_memory,
                 sep=sep or get_file_delimiter(path_or_df),
-                low_memory=low_memory)
+                usecols=usecols if usecols else None)
