@@ -1,6 +1,6 @@
-# GraphKit
+# pygraphkit
 
-Python script to analyze networks by computing centrality measures, determining communities and plotting graphs.
+Python library for simple network analysis through centrality measures, community detection and graph plotting.
 
 ### Requirements
 
