@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-__git__ = 'git@github.com:nelsonaloiysio/GraphKit.git'
-__url__ = 'https://github.com/nelsonaloysio/GraphKit'
+__git__ = 'git@github.com:nelsonaloiysio/pygraphkit.git'
+__url__ = 'https://github.com/nelsonaloysio/pygraphkit'
 
 from argparse import ArgumentParser
 from os.path import isfile
@@ -14,7 +14,7 @@ from graphkit import DEFAULT_LAYOUT, NODE_ATTR
 
 
 def getargs(args=argv[1:]):
-    parser = ArgumentParser(description=str('GraphKit | %s' % __url__))
+    parser = ArgumentParser(description=str('pygraphkit | %s' % __url__))
 
     parser.add_argument("G",
                         action="store",
